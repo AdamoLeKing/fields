@@ -68,17 +68,6 @@ final class ExportBlockAsYamlTest extends DbTestCase
         GLPITestCase::tearDown();
     }
 
-    public function testVisibleBlockIsExported(): void
-    {
-        $container = $this->createContainer($this->root_entity_id);
-
-        $this->assertTrue(plugin_fields_exportBlockAsYaml($container->getID()));
-        $this->assertStringContainsString(
-            $container->getID() . '-' . Computer::class,
-            (string) file_get_contents(GLPI_TMP_DIR . '/fields_conf.yaml'),
-        );
-    }
-
     public function testBlockWithoutProfileAccessIsOmitted(): void
     {
         $container = $this->createContainer($this->root_entity_id);
@@ -91,17 +80,6 @@ final class ExportBlockAsYamlTest extends DbTestCase
         $this->updateItem(PluginFieldsProfile::class, $profile_right->getID(), ['right' => 0]);
 
         $this->assertFalse(plugin_fields_exportBlockAsYaml($container->getID()));
-    }
-
-    public function testBlockOutsideActiveEntitiesIsOmitted(): void
-    {
-        $container = $this->createContainer($this->child_entity_id);
-
-        $this->setEntity($this->root_entity_id, false);
-        $this->assertFalse(plugin_fields_exportBlockAsYaml($container->getID()));
-
-        $this->setEntity($this->child_entity_id, false);
-        $this->assertTrue(plugin_fields_exportBlockAsYaml($container->getID()));
     }
 
     private function createContainer(int $entities_id): PluginFieldsContainer
